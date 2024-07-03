@@ -1,0 +1,69 @@
+# version: '3.8'
+# services:
+#   minio:
+#     image: quay.io/minio/minio
+#     container_name: minio
+#     volumes:
+#       - ./minio-data:/data
+#     environment:
+#       MINIO_ROOT_USER: 'minio_user'
+#       MINIO_ROOT_PASSWORD: 'minio_password'
+#       MINIO_ADDRESS: ':9000'
+#       MINIO_CONSOLE_ADDRESS: ':9090'
+#       MINIO_SERVER_URL: https://s3.dev.local
+#     ports:
+#       - "9000:9000"
+#       - "9090:9090"
+#     command: server /data --console-address ":9090"
+
+#   nginx:
+#     image: 'jc21/nginx-proxy-manager:latest'
+#     container_name: nginx-proxy-manager
+#     restart: unless-stopped
+#     ports:
+#       - '80:80'
+#       - '81:81'
+#       - '443:443'
+#     volumes:
+#       - ./nginx-data:/data
+#       - ./nginx-letsencrypt:/etc/letsencrypt
+#       - ./certs:/etc/nginx/certs:ro
+
+version: '3.8'
+services:
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    volumes:
+      - ./minio-data:/data
+    environment:
+      MINIO_ROOT_USER: 'minio_user'
+      MINIO_ROOT_PASSWORD: 'minio_password'
+      MINIO_ADDRESS: ':9000'
+      MINIO_CONSOLE_ADDRESS: ':9090'
+      MINIO_SERVER_URL: https://s3.dev.local
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    command: server /data --console-address ":9090"
+    networks:
+      - dev-net
+
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./nginx-data:/data
+      - ./nginx-letsencrypt:/etc/letsencrypt
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      - dev-net
+
+networks:
+  dev-net:
+    driver: bridge
